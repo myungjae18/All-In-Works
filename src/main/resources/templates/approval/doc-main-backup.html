@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>전자결재 메인</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2c3e50;
+            color: white;
+            padding: 0.75rem 1.5rem;
+        }
+        .nav-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .nav-right ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-right li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-right li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 상단 메뉴바 -->
+<div class="navbar">
+    <div class="nav-left">
+        <h1>전자결재</h1>
+    </div>
+    <div class="nav-right">
+        <ul>
+<!--            <li><a th:href="@{/approval/write}">기안하기</a></li>-->
+<!--            <li><a th:href="@{/approval/inbox}">미결함</a></li>-->
+<!--            <li><a th:href="@{/approval/progress}">진행함</a></li>-->
+<!--            <li><a th:href="@{/approval/complete}">완료함</a></li>-->
+<!--            <li><a th:href="@{/approval/forms}">양식함</a></li>-->
+        </ul>
+    </div>
+</div>
+
+<!-- 본문 콘텐츠 -->
+<div class="content">
+    <h2>📌 미결 문서</h2>
+    <table class="doc-table">
+        <!-- 문서 리스트 테이블 (생략 가능) -->
+    </table>
+</div>
+
+</body>
+</html>

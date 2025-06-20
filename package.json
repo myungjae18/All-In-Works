@@ -1,0 +1,20 @@
+{
+  "name": "all-in-works",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scss": "sass src/main/resources/static/scss:src/main/resources/static/css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.86.3"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "scss": "^0.2.4"
+  }
+}

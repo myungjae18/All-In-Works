@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>전자결재 문서</title>
+    <link rel="stylesheet" th:href="@{/css/approval/doc-form.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+</head>
+<body>
+
+<!--<div class="top-bar">-->
+<!--    <a href="/approval/formList" class="back-button"> 목록으로 가기</a>-->
+<!--</div>-->
+
+<!-- 버튼 영역 -->
+<div class="top-actions" style="text-align: right; margin-right: 20px;"
+     th:if="${session.user.userNo} == ${documents.userId}">
+<!--    <button class="edit-btn" type="button"-->
+<!--            th:onclick="|location.href='/approval/edit/${documents.id}'|">수정</button>-->
+<!--    <button class="edit-btn" type="button"-->
+<!--            th:onclick="|if(confirm('정말 삭제하시겠습니까?')) location.href='/approval/delete/${documents.id}'|">삭제</button>-->
+    <button class="edit-btn" type="button"
+            th:onclick="|deleteDoc(${documents.id})|">삭제</button>
+</div>
+
+<div class="form-container" th:fragment="formBox">
+
+    <form>
+        <div class="header">
+            <h1>전자 결재 문서</h1>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>문서 제목</th>
+                    <td colspan="3" th:text="${documents.title}">업무 기안서</td>
+                </tr>
+                <tr>
+                    <th>기안자</th>
+                    <td th:text="${documents.userName}">홍길동</td>
+                    <th>부서</th>
+                    <td th:text="${documents.dept}">총무팀</td>
+                </tr>
+                <tr>
+                    <th>직위</th>
+                    <td th:text="${documents.position}">과장</td>
+                    <th>작성일자</th>
+                    <td th:text="${documents.createDate}">2025-04-15</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>결재선</h3>
+            <table class="approval-line">
+                <tr>
+                    <th>결재자</th>
+                    <th>직위</th>
+                    <th>결재 상태</th>
+                    <th>결재일자</th>
+                </tr>
+                <tr>
+                    <td th:text="${documents.approveUserName}">김부장</td>
+                    <td th:text="${documents.approveUserPosition}">부장</td>
+                    <td th:text="${documents.approveStatus}">승인</td>
+                    <td>
+                        <!-- approveStatus가 "결재중"일 때 -->
+                        <div th:if="${documents.approveStatus == '결재중' and documents.approveUserNo == session.user.userNo}">
+                            <button type="button" th:onclick="|approve(${documents.approvalNo})|">승인</button>
+                            <button type="button" th:onclick="|reject(${documents.approvalNo})|">반려</button>
+                        </div>
+
+                        <!-- approveStatus가 "결재중"이 아닐 때 -->
+                        <span th:unless="${documents.approveStatus == '결재중'}" th:text="${documents.approveDate}">2025-04-15</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td th:text="${documents.confirmUserName}">&nbsp;</td>
+                    <td th:text="${documents.confirmUserPosition}">이이사</td>
+                    <td th:text="${documents.confirmStatus}">대기</td>
+                    <td>
+                        <!-- approveStatus가 "결재중"일 때 -->
+                        <div th:if="${documents.confirmStatus == '결재중' and documents.confirmUserNo == session.user.userNo}">
+                            <button type="button" th:onclick="|approve(${documents.confirmNo})|">승인</button>
+                            <button type="button" th:onclick="|reject(${documents.confirmNo})|">반려</button>
+                        </div>
+
+                        <!-- approveStatus가 "결재중"이 아닐 때 -->
+                        <span th:unless="${documents.confirmStatus == '결재중'}" th:text="${documents.confirmDate}">2025-04-15</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>본문 내용</h3>
+            <div class="content">
+                <label>
+                    <textarea name="content" rows="5" cols="50" th:text="${documents.content}" readonly></textarea>
+                </label>
+            </div>
+        </div>
+
+<!--        <div class="section">-->
+<!--            <h3>첨부파일</h3>-->
+<!--            <ul>-->
+<!--                <li><a href="#">업무계획서.pdf</a></li>-->
+<!--                <li><a href="#">예산안.xlsx</a></li>-->
+<!--            </ul>-->
+<!--        </div>-->
+    </form>
+
+    <script>
+        // alert("제출이 완료되었습니다");
+
+        window.addEventListener("DOMContentLoaded", function () {
+            try {
+                if (window.opener) {
+                    window.opener.location.reload();  // 부모 창 새로고침
+                    // window.close(); // 원하면 현재 창 닫기
+                }
+            } catch (e) {
+                console.error("부모 새로고침 실패:", e);
+            }
+        });
+
+
+        function deleteDoc(docId) {
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch(`/approval/delete/${docId}`, {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("삭제되었습니다.");
+                            window.opener.location.reload(); // 부모 창 새로고침
+                            window.close(); // 현재 창 닫기
+                        } else {
+                            alert("삭제에 실패했습니다.");
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류 발생: " + error);
+                    });
+            }
+        }
+
+        function approve(lineNo) {
+            if (confirm("승인하시겠습니까?")) {
+                fetch(`/approval/approveDoc/${lineNo}?status=300`, {
+                    method: 'PATCH'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("승인되었습니다.");
+                            window.opener.location.reload(); // 부모 창 새로고침
+                            window.close(); // 팝업 닫기
+                        } else {
+                            alert("승인에 실패했습니다.");
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류 발생: " + error);
+                    });
+            }
+        }
+        function reject(lineNo) {
+            if (confirm("반려하시겠습니까?")) {
+                fetch(`/approval/approveDoc/${lineNo}?status=200`, {
+                    method: 'PATCH'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("반려되었습니다.");
+                            window.opener.location.reload(); // 부모 창 새로고침
+                            window.close(); // 팝업 닫기
+                        } else {
+                            alert("반려에 실패했습니다.");
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류 발생: " + error);
+                    });
+            }
+        }
+
+    </script>
+</div>
+</body>
+</html>

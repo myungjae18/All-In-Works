@@ -1,0 +1,114 @@
+body {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 0.75rem 1.5rem;
+}
+
+.nav-left h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.nav-right ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-right li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-right li a:hover {
+    text-decoration: underline;
+}
+
+.content {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+}
+
+.content h5 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #007bff;
+    padding-left: 0.75rem;
+    color: #333;
+}
+
+.doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    table-layout: fixed;
+}
+
+.doc-table thead {
+    background-color: #f1f3f5;
+    color: #333;
+}
+
+.doc-table th,
+.doc-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.doc-table tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.doc-table th:nth-child(1), .doc-table td:nth-child(1) { width: 120px; }  /* 문서번호 */
+.doc-table th:nth-child(2), .doc-table td:nth-child(2) { width: 300px; }  /* 제목 */
+.doc-table th:nth-child(3), .doc-table td:nth-child(3) { width: 150px; }  /* 작성자 */
+.doc-table th:nth-child(4), .doc-table td:nth-child(4) { width: 150px; }  /* 작성일 */
+.doc-table th:nth-child(5), .doc-table td:nth-child(5) { width: 100px; }  /* 상태 */
+
+/* 상태 컬러 구분 */
+.doc-table td:last-child {
+    font-weight: 500;
+}
+
+.doc-table td:last-child::before {
+    content: "● ";
+    font-size: 0.75rem;
+    vertical-align: middle;
+}
+
+.status-pending {
+    color: #ffc107; /* 노랑 - 결재중 */
+}
+
+.status-done {
+    color: #28a745; /* 초록 - 완료 */
+}
+
+.status-rejected {
+    color: #dc3545; /* 빨강 - 반려됨 */
+}

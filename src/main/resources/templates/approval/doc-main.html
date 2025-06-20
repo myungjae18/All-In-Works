@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>전자결재 메인</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+</head>
+<body>
+
+<!-- 상단 메뉴바 -->
+<div th:fragment="mainNav">
+    <div class="navbar2">
+        <div class="nav-left">
+            <h1>전자결재</h1>
+        </div>
+        <div class="nav-right">
+            <ul>
+                <li><a href="#"
+                       onclick="window.open('/approval/formList', 'formPopup', 'width=800,height=600'); return false;">기안하기</a></li>
+                <li><a th:href="@{/approval/getConfirmList(userId=${session.user.userNo})}">미결함</a></li>
+                <li><a th:href="@{/approval/getList(userId=${session.user.userNo}, status='10')}">진행함</a></li>
+                <li><a th:href="@{/approval/getList(userId=${session.user.userNo}, status='20')}">반려함</a></li>
+                <li><a th:href="@{/approval/getList(userId=${session.user.userNo}, status='30')}">완료함</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 본문 콘텐츠 -->
+    <div class="content">
+        <h5 th:switch="${status}">
+            <span th:case="'10'">📌 진행 문서함</span>
+            <span th:case="'20'">📌 반려 문서함</span>
+            <span th:case="'30'">📌 완료 문서함</span>
+            <span th:case="'50'">📌 미결 문서함</span>
+            <span th:case="*">📌 전체 문서함</span> <!-- default case -->
+        </h5>
+        <table class="doc-table" border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th>문서번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="doc : ${documents}" th:onclick="|window.open('/approval/detail/${doc.id}', 'formPopup', 'width=800,height=600') |" style="cursor: pointer;">
+                <td th:text="${doc.id}">1</td>
+                <td th:text="${doc.title}">제목</td>
+                <td th:text="${doc.userName}">작성자</td>
+                <td th:text="${doc.createDate}">2025-05-20</td>
+                <td th:text="${doc.status}" th:classappend="${doc.status} == '결재중' ? 'status-pending' :
+                    (${doc.status} == '완료' ? 'status-done' :
+                    (${doc.status} == '반려' ? 'status-rejected' : ''))">상태</td>
+            </tr>
+<!--            <tr>-->
+<!--                <td>DOC-20240509-001</td>-->
+<!--                <td>업무보고서</td>-->
+<!--                <td>홍길동</td>-->
+<!--                <td>2025-05-09</td>-->
+<!--                <td>결재중</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>DOC-20240509-002</td>-->
+<!--                <td>출장신청서</td>-->
+<!--                <td>김영희</td>-->
+<!--                <td>2025-05-08</td>-->
+<!--                <td>완료</td>-->
+<!--            </tr>-->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,769 @@
+<!--
+=========================================================
+* Argon Dashboard 3 - v2.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/argon-dashboard
+* Copyright 2024 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" th:href="@{/img/apple-icon.png}">
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+    <title>
+        All-In-Works
+    </title>
+    <script th:src="@{/js/board/navChk.js}"></script>
+    <!-- jKanban JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
+    <!-- sockjs-client -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- StompJS -->
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+    <!-- Nucleo Icons -->
+    <link href="https://demos.creative-tim.com/argon-dashboard-pro/assets/css/nucleo-icons.css" rel="stylesheet"/>
+    <link href="https://demos.creative-tim.com/argon-dashboard-pro/assets/css/nucleo-svg.css" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- CSS Files -->
+    <link id="pagestyle" th:href="@{/css/argon-dashboard.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.css"/>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .add-btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-btn:hover {
+            background: #1565c0;
+        }
+
+        .add-btn span {
+            margin-right: 6px;
+            font-weight: bold;
+        }
+
+        .kanban-wrapper {
+            display: flex;
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .kanban-board {
+            background: #fff !important;
+            border-radius: 6px;
+            margin: 0 10px;
+            min-width: 300px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .kanban-board-header {
+            padding: 14px 16px !important;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .todo-header {
+            color: #1976d2 !important;
+            border-top: 3px solid #1976d2;
+        }
+
+        .progress-header {
+            color: #fb8c00 !important;
+            border-top: 3px solid #fb8c00;
+        }
+
+        .review-header {
+            color: #7950f2 !important;
+            border-top: 3px solid #7950f2;
+        }
+
+        .done-header {
+            color: #43a047 !important;
+            border-top: 3px solid #43a047;
+        }
+
+        .kanban-item {
+            background: #fff !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            margin-bottom: 8px !important;
+            padding: 0 !important;
+        }
+
+        .border-left-blue {
+            border-left: 3px solid #1976d2 !important;
+        }
+
+        .border-left-green {
+            border-left: 3px solid #43a047 !important;
+        }
+
+        .border-left-purple {
+            border-left: 3px solid #7950f2 !important;
+        }
+
+        .border-left-orange {
+            border-left: 3px solid #fb8c00 !important;
+        }
+
+        .border-left-red {
+            border-left: 3px solid #e53935 !important;
+        }
+
+        .card-content {
+            padding: 12px;
+        }
+
+        .card-id {
+            color: #757575;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .card-tag {
+            padding: 2px 8px;
+            border-radius: 3px;
+            background-color: #f1f3f5;
+            font-size: 11px;
+            color: #555;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* 로딩/에러 메시지 */
+        .loading-text, .error-text {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .error-text {
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body class="g-sidenav-show   bg-gray-100">
+<div class="min-height-300 bg-dark position-absolute w-100"></div>
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/sidenav :: aside}"></aside>
+<!-- End Sidebar Navigation -->
+<main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header :: nav}"></nav>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+        <!-- Register Form -->
+        <div class="row mt-4">
+            <div class="col-lg-12 mb-lg-0 mb-4">
+                <div class="card z-index-0">
+                    <div class="container">
+                        <div class="header">
+                            <h1 class="title">프로젝트 작업 현황</h1>
+                            <div class="ms-auto d-flex gap-2">
+                                <button class="btn btn-primary px-3 py-1 d-flex align-items-center gap-2"
+                                        data-bs-toggle="modal" data-bs-target="#addModal" id="add-btn">
+                                    <span>+</span> 새 작업 추가
+                                </button>
+                            </div>
+                        </div>
+                        <div class="kanban-wrapper">
+                            <div id="kanban"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Register Form -->
+        </div>
+        <!-- footer -->
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+        <!-- End footer -->
+    </div>
+</main>
+<div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+        <i class="fa fa-cog py-2"> </i>
+    </a>
+    <div class="card shadow-lg">
+        <div class="card-header pb-0 pt-3 ">
+            <div class="float-start">
+                <h5 class="mt-3 mb-0">Argon Configurator</h5>
+                <p>See our dashboard options.</p>
+            </div>
+            <div class="float-end mt-4">
+                <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <!-- End Toggle Button -->
+        </div>
+        <hr class="horizontal dark my-1">
+        <div class="card-body pt-sm-3 pt-0 overflow-auto">
+            <!-- Sidebar Backgrounds -->
+            <div>
+                <h6 class="mb-0">Sidebar Colors</h6>
+            </div>
+            <a href="javascript:void(0)" class="switch-trigger background-color">
+                <div class="badge-colors my-2 text-start">
+                    <span class="badge filter bg-gradient-primary active" data-color="primary"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-success" data-color="success"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-warning" data-color="warning"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-danger" data-color="danger"
+                          onclick="sidebarColor(this)"></span>
+                </div>
+            </a>
+            <!-- Sidenav Type -->
+            <div class="mt-3">
+                <h6 class="mb-0">Sidenav Type</h6>
+                <p class="text-sm">Choose between 2 different sidenav types.</p>
+            </div>
+            <div class="d-flex">
+                <button class="btn bg-gradient-primary w-100 px-3 mb-2 active me-2" data-class="bg-white"
+                        onclick="sidebarType(this)">White
+                </button>
+                <button class="btn bg-gradient-primary w-100 px-3 mb-2" data-class="bg-default"
+                        onclick="sidebarType(this)">Dark
+                </button>
+            </div>
+            <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+            <!-- Navbar Fixed -->
+            <div class="d-flex my-3">
+                <h6 class="mb-0">Navbar Fixed</h6>
+                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                    <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed"
+                           onclick="navbarFixed(this)">
+                </div>
+            </div>
+            <hr class="horizontal dark my-sm-4">
+            <div class="mt-2 mb-5 d-flex">
+                <h6 class="mb-0">Light / Dark</h6>
+                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                    <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version"
+                           onclick="darkMode(this)">
+                </div>
+            </div>
+            <a class="btn bg-gradient-dark w-100" href="https://www.creative-tim.com/product/argon-dashboard">Free
+                Download</a>
+            <a class="btn btn-outline-dark w-100"
+               href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard">View documentation</a>
+            <div class="w-100 text-center">
+                <a class="github-button" href="https://github.com/creativetimofficial/argon-dashboard"
+                   data-icon="octicon-star" data-size="large" data-show-count="true"
+                   aria-label="Star creativetimofficial/argon-dashboard on GitHub">Star</a>
+                <h6 class="mt-3">Thank you for sharing!</h6>
+                <a href="https://twitter.com/intent/tweet?text=Check%20Argon%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fargon-dashboard"
+                   class="btn btn-dark mb-0 me-2" target="_blank">
+                    <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/argon-dashboard"
+                   class="btn btn-dark mb-0 me-2" target="_blank">
+                    <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 새 작업 추가/수정 모달 -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">작업 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="cardIdInput">
+                <input type="hidden" id="taskDetailOrder">
+                <div class="mb-3">
+                    <label for="taskTitle" class="form-label">제목</label>
+                    <input type="text" id="taskTitle" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="taskStatus" class="form-label">상태</label>
+                    <select id="taskStatus" class="form-select">
+                        <option value="To Do">To Do</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="In Review">In Review</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="taskTags" class="form-label">담당 파트</label>
+                    <input type="text" id="taskTags" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="taskStartDate" class="form-label">시작일</label>
+                    <input type="date" id="taskStartDate" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="taskEndDate" class="form-label">종료일</label>
+                    <input type="date" id="taskEndDate" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-danger d-none" id="deleteCardBtn">삭제</button>
+                <button type="button" class="btn btn-primary" id="saveCardBtn">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--   Core JS Files   -->
+<script th:src="@{/js/core/popper.min.js}"></script>
+<script th:src="@{/js/core/bootstrap.min.js}"></script>
+<script th:src="@{/js/plugins/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/smooth-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/chartjs.min.js}"></script>
+<script>
+    var ctx1 = document.getElementById("chart-line").getContext("2d");
+
+    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
+
+    gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
+    gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
+    gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
+    new Chart(ctx1, {
+        type: "line",
+        data: {
+            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [{
+                label: "Mobile apps",
+                tension: 0.4,
+                borderWidth: 0,
+                pointRadius: 0,
+                borderColor: "#5e72e4",
+                backgroundColor: gradientStroke1,
+                borderWidth: 3,
+                fill: true,
+                data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+                maxBarThickness: 6
+
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            scales: {
+                y: {
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        padding: 10,
+                        color: '#fbfbfb',
+                        font: {
+                            size: 11,
+                            family: "Open Sans",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                    }
+                },
+                x: {
+                    grid: {
+                        drawBorder: false,
+                        display: false,
+                        drawOnChartArea: false,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#ccc',
+                        padding: 20,
+                        font: {
+                            size: 11,
+                            family: "Open Sans",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                    }
+                },
+            },
+        },
+    });
+</script>
+<script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+        var options = {
+            damping: '0.5'
+        }
+        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+</script>
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>-->
+<script>
+    let stompClient = null;
+    let user;
+    let projectNo;
+
+    function cardTemplate(card) {
+        // 주요 값은 data- 속성으로도 넣어줌
+        return `
+    <div class="card-content"
+      data-id="${card.id}"
+      data-title="${card.title || ''}"
+      data-userNo="${card.userNo || ''}"
+      data-start="${card.startDate || ''}"
+      data-end="${card.endDate || ''}"
+      data-part="${card.part || ''}"
+      data-detailOrder="${card.detailOrder || ''}"
+      >
+      <div class="card-title mb-1 fw-bold">${card.title || ''}</div>
+      <div class="card-meta mb-1" style="font-size:12px; color:#666;">
+        <span class="me-2"><i class="fa fa-user"></i> ${card.userName || '-'}</span>
+        <span><i class="fa fa-calendar"></i> ${card.startDate || ''} ~ ${card.endDate || ''}</span>
+      </div>
+      <div class="card-tags">
+        <span class="card-tag">${card.part || '-'}</span>
+      </div>
+    </div>
+  `;
+    }
+
+    async function loadKanban() {
+        try {
+            // 1. 비동기 GET 요청
+            const response = await fetch(`/project/${user.department.deptNo}`);
+            if (!response.ok) throw new Error(`서버 오류: ${response.status}`);
+
+            // 2. JSON 데이터 파싱
+            const projectResponse = await response.json();
+            projectNo = projectResponse.projectNo;
+
+            // 3. jKanban 초기화 (기존 보드 비우고 새로 생성)
+            const kanbanEl = document.getElementById('kanban');
+            kanbanEl.innerHTML = ''; // 기존 내용 제거
+
+            projectResponse.columns.forEach(column => {
+                column.item.forEach((card, idx) => {
+                    if (!card.detailOrder) card.detailOrder = idx + 1;
+                    card.title = cardTemplate(card);
+                })
+            })
+
+            window.kanban = new jKanban({
+                element: '#kanban',
+                gutter: '15px',
+                widthBoard: '300px',
+                boards: projectResponse.columns, // 서버에서 받은 boardsData 구조
+                dropEl: function (el, target, source, sibling) {//카드가 움직이고 위치가 정해진 뒤 호출
+                    const cardId = el.getAttribute('data-eid') || el.querySelector('.card-content')?.dataset.id;
+                    const toColumnId = target.closest('.kanban-board').getAttribute('data-id');
+                    // 새로운 순서 계산 (예: target 컬럼의 .kanban-item 순서)
+                    const cards = Array.from(target.querySelectorAll('.kanban-item'));
+                    const detailOrder = cards.indexOf(el) + 1; // 1부터 시작
+                    moveCardAsync(cardId, toColumnId, detailOrder);
+                },
+                click: function (el) {//카드를 한 번 클릭했울 경우 호출
+                    document.getElementById('taskStatus').disabled = true;
+                    const boardNode = el.closest('.kanban-board'); // 부모 컬럼 DOM 탐색
+                    const clickedCardColumnId = boardNode.getAttribute('data-id');
+                    const taskStatus = document.getElementById('taskStatus');
+                    taskStatus.innerHTML = '';
+                    projectResponse.columns.forEach(column => {
+                        const option = document.createElement('option');
+                        option.value = column.id;
+                        option.textContent = column.title;
+                        taskStatus.appendChild(option);
+                    });
+
+                    // 2. 카드 클릭 시, 해당 카드의 컬럼 id를 select의 value로 지정
+                    taskStatus.value = clickedCardColumnId; // clickedCardColumnId를 카드의 컬럼 id로 지정
+
+                    // el: 카드의 DOM 요소 (여기서 .card-content를 찾음)
+                    const content = el.querySelector('.card-content') || el;
+                    const cardData = {
+                        id: content.dataset.id,
+                        taskTitle: content.dataset.title,
+                        userNo: content.dataset.userNo,
+                        startDate: content.dataset.start,
+                        endDate: content.dataset.end,
+                        part: content.dataset.part,
+                        detailOrder: content.dataset.detailOrder
+                    };
+                    // 모달에 값 전달
+                    document.getElementById('cardIdInput').value = cardData.id || '';
+                    document.getElementById('taskTitle').value = cardData.taskTitle || '';
+                    document.getElementById('taskStartDate').value = cardData.startDate || '';
+                    document.getElementById('taskEndDate').value = cardData.endDate || '';
+                    document.getElementById('taskTags').value = cardData.part || '';
+                    document.getElementById('taskDetailOrder').value = cardData.detailOrder || '';
+
+                    // 삭제 버튼 보이기
+                    document.getElementById('deleteCardBtn').classList.remove('d-none');
+
+                    // 모달 띄우기
+                    const modalEl = document.getElementById('addModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                }
+            });
+
+        } catch (err) {
+            alert('프로젝트 칸반 로딩 실패: ' + err.message);
+            console.error(err);
+        }
+    }
+
+    //webSocket을 이용하여 변경된 board 수신
+    function connectWebSocket(projectNo) {
+        const socket = new SockJS('/ws/allInWorks');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            stompClient.subscribe(`/topic/kanban/${projectNo}`, function (message) {
+                // 서버에서 "updated" 메시지 수신 시 최신 데이터 재로딩
+                loadKanban();
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        //세션에서 접속한 유저의 정보를 저장
+        const sessionUser = await checkUserSession();
+        if (sessionUser) {
+            console.log(sessionUser.department.deptNo);
+            user = sessionUser;
+        }
+
+        //페이지 로딩과 함께 세션에 있는 user 정보를 통해 보드의 정보 불러오기
+        await loadKanban();
+        connectWebSocket(projectNo);
+
+        //카드 생성 또는 수정 처리
+        document.getElementById('saveCardBtn').addEventListener('click', async function () {
+            const cardId = document.getElementById('cardIdInput').value;
+
+            //보낼 데이터 가공
+            const cardData = {
+                title: document.getElementById('taskTitle').value,
+                startDate: document.getElementById('taskStartDate').value,
+                endDate: document.getElementById('taskEndDate').value,
+                part: document.getElementById('taskTags').value,
+                status: document.getElementById('taskStatus').value,
+                detailOrder: document.getElementById('taskDetailOrder').value,
+                projectNo: projectNo,
+                userNo: user.userNo
+            };
+
+            try {
+                let response;
+                //cardId가 없을 경우 생성, 있을 경우 수정 요청 처리
+                if (!cardId) {
+                    // 새 작업 추가 (POST)
+                    response = await fetch(`/projectDetails`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(cardData)
+                    });
+                } else {
+                    // 카드 수정 (PUT)
+                    response = await fetch(`/projectDetail/${cardId}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(cardData)
+                    });
+                }
+                if (!response.ok) throw new Error('저장 실패');
+                await loadKanban(); // 최신 보드 데이터 다시 로딩
+                // 모달 닫기
+                const modalEl = document.getElementById('addModal');
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.hide();
+            } catch (err) {
+                alert('카드 저장 중 오류가 발생했습니다.');
+                console.error(err);
+            }
+        });
+
+    });
+
+    // 비동기로 세션에 user가 존재하는지 확인하는 함수
+    async function checkUserSession() {
+        try {
+            const response = await fetch('/user/session-user', {credentials: 'include'}); // credentials: 'include'로 쿠키 전송
+            if (!response.ok) return false;
+
+            return await response.json();
+        } catch (error) {
+            console.error('세션 확인 실패:', error);
+            return false;
+        }
+    }
+
+    async function moveCardAsync(cardId, toColumnId, detailOrder) {
+        try {
+            const body = {
+                status: toColumnId,
+                detailOrder: detailOrder
+            };
+
+            await fetch(`/projectDetail/${cardId}/moved`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+
+            //await loadKanban();
+        } catch (err) {
+            alert('카드 이동 중 오류가 발생했습니다.');
+            console.error(err);
+        }
+    }
+
+    // WebSocket을 통해 실시간 boardsData 수신
+    // stompClient.subscribe('/topic/kanban', function(message) {
+    //     const boardsData = JSON.parse(message.body);
+    //     window.kanban = new jKanban({
+    //         element: '#kanban',
+    //         boards: boardsData
+    //     });
+    // });
+
+
+    //카드 삭제 요청
+    document.getElementById('deleteCardBtn').addEventListener('click', async function () {
+        const cardId = document.getElementById('cardIdInput').value;
+        if (!cardId) {
+            alert('삭제할 카드가 선택되지 않았습니다.');
+            return;
+        }
+
+        try {
+            await fetch(`/projectDetail/${cardId}`, { method: 'DELETE'});
+
+            //await loadKanban();
+
+            // 모달 닫기
+            const modalEl = document.getElementById('addModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+        } catch (err) {
+            alert('카드 삭제 중 오류가 발생했습니다.');
+            console.error(err);
+        }
+    });
+
+    document.getElementById('add-btn').addEventListener('click', function () {
+        document.getElementById('taskStatus').disabled = false;
+        // 입력값 초기화
+        document.getElementById('cardIdInput').value = '';
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskStartDate').value = '';
+        document.getElementById('taskEndDate').value = '';
+        document.getElementById('taskTags').value = '';
+        document.getElementById('deleteCardBtn').classList.add('d-none');
+        // 모달 띄우기
+        const modalEl = document.getElementById('addModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    });
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script th:src="@{/js/argon-dashboard.min.js}"></script>
+</body>
+
+</html>

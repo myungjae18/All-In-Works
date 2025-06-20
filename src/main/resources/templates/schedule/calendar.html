@@ -1,0 +1,857 @@
+<!--
+=========================================================
+* Argon Dashboard 3 - v2.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/argon-dashboard
+* Copyright 2024 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" th:href="@{/img/apple-icon.png}">
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+    <title>
+        All-In-Works
+    </title>
+    <!-- jKanban JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
+    <!-- sockjs-client -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- StompJS -->
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css' rel='stylesheet'/>
+    <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/main.min.css' rel='stylesheet'/>
+    <style>
+        #calendar {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .required::after {
+            content: "*";
+            color: red;
+            margin-left: 3px;
+        }
+
+        #participantsGroup {
+            display: none;
+        }
+    </style>
+    <script th:src="@{/js/board/navChk.js}"></script>
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+    <!-- Nucleo Icons -->
+    <link href="https://demos.creative-tim.com/argon-dashboard-pro/assets/css/nucleo-icons.css" rel="stylesheet"/>
+    <link href="https://demos.creative-tim.com/argon-dashboard-pro/assets/css/nucleo-svg.css" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- CSS Files -->
+    <link id="pagestyle" th:href="@{/css/argon-dashboard.css}" rel="stylesheet"/>
+
+</head>
+<body class="g-sidenav-show   bg-gray-100">
+<div class="min-height-300 bg-dark position-absolute w-100"></div>
+<!-- Sidebar Navigation -->
+<aside th:replace="~{fragments/sidenav :: aside}"></aside>
+<!-- End Sidebar Navigation -->
+<main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header :: nav}"></nav>
+    <!-- End Navbar -->
+    <!-- Buttons -->
+    <div class="container-fluid py-4">
+<!--        <div class="row">-->
+<!--            <div class="col-xl-6">-->
+<!--                <a th:href="@{/schedule/register}"-->
+<!--                   class="btn btn-light btn-sm w-100 mb-3"-->
+<!--                   type="button">일정 등록</a>-->
+<!--            </div>-->
+<!--            <div class="col-xl-6">-->
+<!--                <a th:href="@{/schedule/meeting-room}"-->
+<!--                   class="btn btn-primary btn-sm mb-0 w-100"-->
+<!--                   type="button">희의실 예약</a>-->
+<!--            </div>-->
+<!--        </div>-->
+        <!-- End Buttons -->
+        <!-- FullCalendar -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card z-index-0">
+                    <div class="container">
+                        <div id='calendar'>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 일정 생성 모달 -->
+            <!-- 이벤트 생성 모달 -->
+            <div class="modal fade" id="eventModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">새 일정 생성</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="eventForm">
+                                <!-- 날짜 범위 표시 추가 -->
+                                <div class="mb-3">
+                                    <h6 id="selectedDateRange" class="text-muted"></h6>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label required">일정 이름</label>
+                                    <input type="text" class="form-control" id="eventTitle" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label required">일정 유형</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="eventType"
+                                               id="personalEvent" value="personal" checked>
+                                        <label class="form-check-label" for="personalEvent">개인 일정</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="eventType"
+                                               id="groupEvent" value="group">
+                                        <label class="form-check-label" for="groupEvent">단체 일정</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3" id="participantsGroup" style="display:none;">
+                                    <div class="mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="selectAllParticipants">
+                                            <label class="form-check-label" for="selectAllParticipants">전체 선택</label>
+                                        </div>
+                                    </div>
+                                    <label class="form-label required">참여자 선택</label>
+                                    <select class="form-select" id="participants" multiple>
+                                        <!-- 부서원 옵션들 -->
+                                    </select>
+                                </div>
+                                <!-- 종일 체크박스 추가 -->
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="allDayCheckbox">
+                                        <label class="form-check-label" for="allDayCheckbox">종일</label>
+                                    </div>
+                                </div>
+
+                                <div id="timeSelection">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label required">시작 시간</label>
+                                            <select class="form-select" id="startTime" required>
+                                                <!-- JS로 채워짐 -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label required">종료 시간</label>
+                                            <select class="form-select" id="endTime" required>
+                                                <!-- JS로 채워짐 -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 메모 작성 -->
+                                <div class="mb-3">
+                                    <label class="form-label">메모</label>
+                                    <textarea class="form-control" id="eventMemo" rows="3"></textarea>
+                                </div>
+                            </form>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-primary" id="saveEvent">저장</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End FullCalendar -->
+            <!-- footer -->
+            <footer th:replace="~{fragments/footer :: footer}"></footer>
+            <!-- End footer -->
+        </div>
+    </div>
+</main>
+<div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+        <i class="fa fa-cog py-2"> </i>
+    </a>
+    <div class="card shadow-lg">
+        <div class="card-header pb-0 pt-3 ">
+            <div class="float-start">
+                <h5 class="mt-3 mb-0">Argon Configurator</h5>
+                <p>See our dashboard options.</p>
+            </div>
+            <div class="float-end mt-4">
+                <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <!-- End Toggle Button -->
+        </div>
+        <hr class="horizontal dark my-1">
+        <div class="card-body pt-sm-3 pt-0 overflow-auto">
+            <!-- Sidebar Backgrounds -->
+            <div>
+                <h6 class="mb-0">Sidebar Colors</h6>
+            </div>
+            <a href="javascript:void(0)" class="switch-trigger background-color">
+                <div class="badge-colors my-2 text-start">
+                    <span class="badge filter bg-gradient-primary active" data-color="primary"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-success" data-color="success"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-warning" data-color="warning"
+                          onclick="sidebarColor(this)"></span>
+                    <span class="badge filter bg-gradient-danger" data-color="danger"
+                          onclick="sidebarColor(this)"></span>
+                </div>
+            </a>
+            <!-- Sidenav Type -->
+            <div class="mt-3">
+                <h6 class="mb-0">Sidenav Type</h6>
+                <p class="text-sm">Choose between 2 different sidenav types.</p>
+            </div>
+            <div class="d-flex">
+                <button class="btn bg-gradient-primary w-100 px-3 mb-2 active me-2" data-class="bg-white"
+                        onclick="sidebarType(this)">White
+                </button>
+                <button class="btn bg-gradient-primary w-100 px-3 mb-2" data-class="bg-default"
+                        onclick="sidebarType(this)">Dark
+                </button>
+            </div>
+            <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+            <!-- Navbar Fixed -->
+            <div class="d-flex my-3">
+                <h6 class="mb-0">Navbar Fixed</h6>
+                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                    <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed"
+                           onclick="navbarFixed(this)">
+                </div>
+            </div>
+            <hr class="horizontal dark my-sm-4">
+            <div class="mt-2 mb-5 d-flex">
+                <h6 class="mb-0">Light / Dark</h6>
+                <div class="form-check form-switch ps-0 ms-auto my-auto">
+                    <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version"
+                           onclick="darkMode(this)">
+                </div>
+            </div>
+            <a class="btn bg-gradient-dark w-100" href="https://www.creative-tim.com/product/argon-dashboard">Free
+                Download</a>
+            <a class="btn btn-outline-dark w-100"
+               href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard">View documentation</a>
+            <div class="w-100 text-center">
+                <a class="github-button" href="https://github.com/creativetimofficial/argon-dashboard"
+                   data-icon="octicon-star" data-size="large" data-show-count="true"
+                   aria-label="Star creativetimofficial/argon-dashboard on GitHub">Star</a>
+                <h6 class="mt-3">Thank you for sharing!</h6>
+                <a href="https://twitter.com/intent/tweet?text=Check%20Argon%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fargon-dashboard"
+                   class="btn btn-dark mb-0 me-2" target="_blank">
+                    <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/argon-dashboard"
+                   class="btn btn-dark mb-0 me-2" target="_blank">
+                    <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--   Core JS Files   -->
+<script th:src="@{/js/core/popper.min.js}"></script>
+<script th:src="@{/js/core/bootstrap.min.js}"></script>
+<script th:src="@{/js/plugins/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/smooth-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/chartjs.min.js}"></script>
+<script>
+    var ctx1 = document.getElementById("chart-line").getContext("2d");
+
+    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
+
+    gradientStroke1.addColorStop(1, 'rgba(94, 114, 228, 0.2)');
+    gradientStroke1.addColorStop(0.2, 'rgba(94, 114, 228, 0.0)');
+    gradientStroke1.addColorStop(0, 'rgba(94, 114, 228, 0)');
+    new Chart(ctx1, {
+        type: "line",
+        data: {
+            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [{
+                label: "Mobile apps",
+                tension: 0.4,
+                borderWidth: 0,
+                pointRadius: 0,
+                borderColor: "#5e72e4",
+                backgroundColor: gradientStroke1,
+                borderWidth: 3,
+                fill: true,
+                data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+                maxBarThickness: 6
+
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            scales: {
+                y: {
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        padding: 10,
+                        color: '#fbfbfb',
+                        font: {
+                            size: 11,
+                            family: "Open Sans",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                    }
+                },
+                x: {
+                    grid: {
+                        drawBorder: false,
+                        display: false,
+                        drawOnChartArea: false,
+                        drawTicks: false,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#ccc',
+                        padding: 20,
+                        font: {
+                            size: 11,
+                            family: "Open Sans",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                    }
+                },
+            },
+        },
+    });
+</script>
+<script>
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+        var options = {
+            damping: '0.5'
+        }
+        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+</script>
+<script>
+    let stompClient = null;
+    let calendar;
+    let eventStartDate, eventEndDate;
+    let user;
+    let currentEvent = null;
+
+    function connectWebSocket(userNo) {
+        const socket = new SockJS('/ws/allInWorks'); // 엔드포인트는 서버 설정에 맞게
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function () {
+            // 본인 userNo로 구독
+            stompClient.subscribe(`/topic/schedule/${userNo}`, function (message) {
+                // 서버에서 메시지 오면 캘린더 이벤트 다시 불러오기
+                calendar.refetchEvents();
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const sessionUser = await checkUserSession();
+        if (sessionUser) {
+            console.log(sessionUser.department.deptNo);
+            user = sessionUser;
+            connectWebSocket(user.userNo);
+        }
+
+        const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6'];
+        let colorIdx = 0;
+
+        const calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            aspectRatio: 1.8,
+            initialView: 'dayGridMonth',
+            locale: 'ko',
+            timeZone: 'local',
+            selectable: true,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            //로그인 여부에 따른 일정 생성 허용
+            select: function (info) {
+                if (!user) {//로그인 정보가 없으면
+                    if (confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?"))//대화상자 출력
+                        location.href = "/user/login";//확인 시 로그인 페이지로 이동
+                } else openEventModal(info.start, info.end, "create");//일정 생성 모달 출력
+
+
+            },
+            events: `/schedules/${user.userNo}`,
+            eventClick: function (info) {
+                openEventModal(info.start, info.end, "update", info.event)//일젇 수정 모달 출력
+            }
+        });
+
+        calendar.setOption('eventDataTransform', event => {
+            event.color = colors[colorIdx % colors.length];
+            colorIdx++;
+            return event;
+        });
+
+
+        //변경: eventClick 에서 이벤트 객체도 전달하도록
+        calendar.setOption('eventClick', info => {
+            openEventModal(info.event.start, info.event.end,
+                'update', info.event);
+        });
+        calendar.render();
+
+        // 부서원 전체 선택 체크박스 이벤트 핸들러
+        document.getElementById('selectAllParticipants').addEventListener('change', function () {
+            const options = document.getElementById('participants').options;
+            for (let option of options) {//옵션 전체 선택 처리
+                option.selected = this.checked;
+            }
+        });
+
+        // 참여자 선택 변경 시 전체 선택 상태 업데이트
+        document.getElementById('participants').addEventListener('change', function () {
+            const allSelected = Array.from(this.options).every(option => option.selected);
+            document.getElementById('selectAllParticipants').checked = allSelected;
+        });
+
+        // 일정 종류 라디오 버튼 이벤트 핸들러
+        document.querySelectorAll('input[name="eventType"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const participantsGroup = document.getElementById('participantsGroup');
+                participantsGroup.style.display = this.value === 'group' ? 'block' : 'none';
+
+                // 전체 선택 체크박스 초기화
+                document.getElementById('selectAllParticipants').checked = false;
+            });
+        });
+
+        // 일정 저장 버튼 클릭 이벤트
+        document.getElementById('saveEvent').addEventListener('click', function () {
+            if (validateForm()) {
+                createEvent();
+                bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();//모달 닫음
+            }
+        });
+
+    });
+
+
+    //일정 시작일과 종료일을 받아 일정 생성 모달 제어
+    function openEventModal(start, end, type, event = null) {
+        //초기화
+        document.getElementById('eventForm').reset();
+        document.getElementById('participantsGroup').style.display = 'none';
+        const participantsSelect = document.getElementById('participants');
+        participantsSelect.innerHTML = '';
+
+        //이벤트 시작일과 종료일 저장
+        eventStartDate = start;
+        eventEndDate = end;
+
+        const formatter = new Intl.DateTimeFormat('ko-KR', {dateStyle: 'long'});
+        const dateRangeElement = document.getElementById('selectedDateRange');
+        if (start.toDateString() === end.toDateString()) {
+            dateRangeElement.textContent = formatter.format(start);
+        } else {
+            dateRangeElement.textContent = `${formatter.format(start)} ~ ${formatter.format(end)}`;
+        }
+
+        // 시간 selectBox 채우기
+        fillTimeSelect('startTime', start.toTimeString().substring(0, 5));
+        fillTimeSelect('endTime', end.toTimeString().substring(0, 5));
+
+        // 종일 체크박스 이벤트
+        const allDayCheckbox = document.getElementById('allDayCheckbox');
+        allDayCheckbox.checked = false;
+        const timeSelection = document.getElementById('timeSelection');
+        allDayCheckbox.addEventListener('change', function () {
+            timeSelection.style.display = this.checked ? 'none' : 'block';
+            if (this.checked) {
+                // 종일 선택 시 시간 초기화 (필요하다면)
+                document.getElementById('startTime').value = '00:00';
+                document.getElementById('endTime').value = '23:59';
+            }
+        });
+
+        // 4) 모달 제목·버튼 토글
+        const modalTitle = document.querySelector('#eventModal .modal-title');
+        const saveBtn = document.getElementById('saveEvent');
+        // 수정/삭제 버튼이 없으면 추가
+        let updateBtn = document.getElementById('updateEvent');
+        let deleteBtn = document.getElementById('deleteEvent');
+        if (!updateBtn) {
+            updateBtn = document.createElement('button');
+            updateBtn.id = 'updateEvent';
+            updateBtn.type = 'button';
+            updateBtn.className = 'btn btn-primary';
+            updateBtn.textContent = '수정';
+            saveBtn.after(updateBtn);
+        }
+        if (!deleteBtn) {
+            deleteBtn = document.createElement('button');
+            deleteBtn.id = 'deleteEvent';
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'btn btn-danger me-2';
+            deleteBtn.textContent = '삭제';
+            saveBtn.before(deleteBtn);
+        }
+
+        if (type === "create") {
+            //버튼 출력
+            saveBtn.style.display = 'inline-block';
+            updateBtn.style.display = 'none';
+            deleteBtn.style.display = 'none';
+
+            // 부서원 비동기 조회
+            fetch(`/users`)  // 실제 API 엔드포인트로 변경 필요
+                .then(res => {
+                    if (!res.ok) throw new Error('부서원 조회 실패');
+                    return res.json();
+                })
+                .then(users => {
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.name = "participantDto.userDto.userNo";
+                        option.value = user.userNo;
+                        option.textContent = `${user.departmentDto.deptName} ${user.userName}`;  // 직책 + 이름 표시
+                        participantsSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('부서원 목록을 불러오는데 실패했습니다.');
+                });
+
+        } else {  // update 모드
+            currentEvent = event;
+            modalTitle.textContent = '일정 수정';
+            saveBtn.style.display = 'none';
+            updateBtn.style.display = 'inline-block';
+            deleteBtn.style.display = 'inline-block';
+
+            // 1) 기본 필드 채우기
+            document.getElementById('eventTitle').value = event.title;
+
+            // const isAllDay = event.allDay;
+            // allDayCheckbox.checked = isAllDay;
+            // allDayCheckbox.onchange();  // 종일 선택 상태 반영
+
+            // 2) 시간·날짜 조합
+            // const startTimeStr = event.start.toTimeString().substr(0,5);
+            // const endTimeStr   = event.end.toTimeString().substr(0,5);
+            fillTimeSelect('startTime', event.start.toTimeString().substring(0, 5));
+            fillTimeSelect('endTime', event.end.toTimeString().substring(0, 5));
+
+            // 3) 메모 채우기
+            document.getElementById('eventMemo').value = event.extendedProps.memo || '';
+
+            // 4) 단체 일정일 경우 참여자 목록 보여주기
+            if(event.extendedProps.type == "group") document.getElementById('groupEvent').checked = true;
+            document.getElementById('participantsGroup').style.display = 'block';
+
+            // 4) 참여자 옵션 생성 후, 기존 참여자 선택
+            fetch(`/users`)
+                .then(res => res.json())
+                .then(users => {
+                    users.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.name = "participantDto.userDto.userNo";
+                        opt.value = u.userNo;
+                        opt.textContent = `${u.departmentDto.deptName} ${u.userName}`;
+                        const isSelected = event.extendedProps.participants.some(
+                            p => String(p.userDto.userNo) === String(u.userNo)
+                        );
+                        if (isSelected) {
+                            opt.selected = true;
+                        }
+                        participantsSelect.appendChild(opt);
+                    });
+                });
+
+            // 5) 버튼 핸들러: 수정
+            updateBtn.onclick = updateEvent;
+
+            // 6) 버튼 핸들러: 삭제
+            deleteBtn.onclick = deleteEvent;
+        }
+
+
+        // 모달 열기
+        const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+        modal.show();
+    }
+
+    function validateForm() {
+        const allDay = document.getElementById('allDayCheckbox').checked;
+        const requiredFields = [
+            {id: 'eventTitle', message: '일정 이름을 입력해주세요.'}
+        ];
+
+        // 종일이 아니면 시간 필드 검증
+        if (!allDay) {
+            requiredFields.push(
+                {id: 'startTime', message: '시작 시간을 선택해주세요.'},
+                {id: 'endTime', message: '종료 시간을 선택해주세요.'}
+            );
+        }
+
+        // 필수 필드 검사
+        for (const field of requiredFields) {
+            const element = document.getElementById(field.id);
+            if (!element.value.trim()) {
+                alert(field.message);
+                element.focus();
+                return false;
+            }
+        }
+
+        // 종료 시간 > 시작 시간 검증 (종일 아닐 때만)
+        if (!allDay) {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            if (startTime >= endTime) {
+                alert('종료 시간은 시작 시간 이후로 설정해주세요.');
+                return false;
+            }
+        }
+
+        // 단체 일정 시 참여자 선택 검증
+        if (document.querySelector('input[name="eventType"]:checked').value === 'group' &&
+            document.getElementById('participants').selectedOptions.length === 0) {
+            alert('참여자를 선택해주세요.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 비동기로 세션에 user가 존재하는지 확인하는 함수
+    async function checkUserSession() {
+        try {
+            const response = await fetch('/user/session-user', {credentials: 'include'}); // credentials: 'include'로 쿠키 전송
+            if (!response.ok) return false;
+
+            return await response.json();
+        } catch (error) {
+            console.error('세션 확인 실패:', error);
+            return false;
+        }
+    }
+
+
+    async function createEvent() {
+        if (!validateForm()) return;
+
+        const allDay = document.getElementById('allDayCheckbox').checked;
+
+        // 날짜 계산 함수
+        const getDateTime = (baseDate, timeElementId) => {
+            const [hours, minutes] = document.getElementById(timeElementId).value.split(':').map(Number);
+            const date = new Date(baseDate);
+            date.setHours(hours, minutes);
+            return date;
+        };
+
+        let start, end;
+
+        if (allDay) {
+            start = new Date(eventStartDate);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(eventEndDate);
+            end.setHours(23, 59, 59, 999);
+        } else {
+            start = getDateTime(eventStartDate, 'startTime');
+            end = getDateTime(eventEndDate, 'endTime');
+            console.log(`시작 일시: ${start}, 종료 일시: ${end}`)
+        }
+
+        try {
+            const eventType = document.querySelector('input[name="eventType"]:checked')?.value;
+            const userNoList = eventType === 'personal'
+                ? [user.userNo]
+                : Array.from(document.getElementById('participants').selectedOptions).map(option => option.value);
+
+            // 1. 서버에 이벤트 저장 (POST 요청)
+            const response = await fetch('/schedules', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    title: document.getElementById('eventTitle').value,
+                    start: start.toISOString(),
+                    end: end.toISOString(),
+                    author: user.userNo,
+                    memo: document.getElementById('eventMemo').value,
+                    type: eventType,
+                    userNoList: userNoList
+                })
+            });
+
+            if (!response.ok) throw new Error('서버 저장 실패');
+
+            // 2. 저장 성공 시 캘린더 갱신
+            //calendar.refetchEvents(); // 서버에서 새로 조회
+            new bootstrap.Modal(document.getElementById('eventModal')).hide();
+            alert('일정이 저장되었습니다!');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('일정 저장에 실패했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    async function updateEvent() {
+        if (!validateForm()) return;//유효성 검사
+
+        const allDay = document.getElementById('allDayCheckbox').checked;
+        const getDateTime = (baseDate, timeElementId) => {
+            const [h, m] = document.getElementById(timeElementId)
+                .value.split(':').map(Number);
+            const d = new Date(baseDate);
+            d.setHours(h, m, 0, 0);
+            return d;
+        };
+
+        let start, end;
+        if (allDay) {
+            start = new Date(eventStartDate);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(eventEndDate);
+            end.setHours(23, 59, 59, 999);
+        } else {
+            start = getDateTime(eventStartDate, 'startTime');
+            end = getDateTime(eventEndDate, 'endTime');
+        }
+
+        const title = document.getElementById('eventTitle').value;
+        const memo = document.getElementById('eventMemo').value;
+        const participants = Array.from(
+            document.getElementById('participants').selectedOptions
+        ).map(o => o.value);
+
+        try {
+            const eventType = document.querySelector('input[name="eventType"]:checked')?.value;
+            const userNoList = eventType === 'personal'
+                ? [user.userNo]
+                : Array.from(document.getElementById('participants').selectedOptions).map(option => option.value);
+
+            const res = await fetch(`/schedules/${currentEvent.id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    title: document.getElementById('eventTitle').value,
+                    start: start.toISOString(),
+                    end: end.toISOString(),
+                    author: user.userNo,
+                    memo: document.getElementById('eventMemo').value,
+                    type: eventType,
+                    userNoList: userNoList
+                })
+            });
+            if (!res.ok) throw new Error('서버 수정 실패');
+
+            //calendar.refetchEvents();
+            bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+            alert('일정이 수정되었습니다!');
+        } catch (e) {
+            console.error(e);
+            alert('수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    async function deleteEvent() {
+        if (!confirm('정말 이 일정을 삭제하시겠습니까?')) return;
+
+        try {
+            const res = await fetch(`/schedules/${currentEvent.id}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('서버 삭제 실패');
+
+            //calendar.refetchEvents();
+            bootstrap.Modal.getInstance(
+                document.getElementById('eventModal')
+            ).hide();
+            alert('일정이 삭제되었습니다!');
+        } catch (e) {
+            console.error(e);
+            alert('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+    }
+
+    function fillTimeSelect(selectId, defaultValue = '') {
+        const select = document.getElementById(selectId);
+        select.innerHTML = ''; // 기존 옵션 삭제
+
+        // 00:00 ~ 23:30까지 30분 단위로 option 생성
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const hourStr = String(hour).padStart(2, '0');
+                const minuteStr = String(minute).padStart(2, '0');
+                const timeValue = `${hourStr}:${minuteStr}`;
+                const option = document.createElement('option');
+                option.value = timeValue;
+                option.textContent = timeValue;
+                select.appendChild(option);
+            }
+        }
+        if (defaultValue) {
+            select.value = defaultValue;
+        }
+    }
+
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script th:src="@{/js/argon-dashboard.js}"></script>
+</body>
+
+</html>

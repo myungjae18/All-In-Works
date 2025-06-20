@@ -1,0 +1,68 @@
+body {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.approval-forms {
+    /*font-family: 'Segoe UI', sans-serif;*/
+    margin: 0;
+    padding: 40px;
+    background-color: #f8f9fa;
+}
+h1 {
+    text-align: center;
+    color: #333;
+}
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.form-category {
+    margin-top: 30px;
+}
+.form-category h2 {
+    color: #007bff;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* 리스트 항목 공통 스타일 */
+.list-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+    cursor: pointer;
+    color: inherit;         /* 부모 글자색을 상속 */
+    text-decoration: none;  /* 밑줄 제거 */
+}
+
+.list-item:hover {
+    background-color: #f1f1f1;
+    text-decoration: underline; /* 선택적으로 hover 시 밑줄 */
+    color: #007bff;             /* hover 색상 */
+}
+
+
+/* a 태그의 기본 스타일 제거 및 커스터마이징 */
+.list-item a {
+    display: block;
+    color: inherit;           /* 부모의 색상 상속 */
+    text-decoration: none;   /* 밑줄 제거 */
+}
+
+/* hover 시 스타일 */
+.list-item a:hover {
+    text-decoration: underline;
+    color: #007bff;
+}

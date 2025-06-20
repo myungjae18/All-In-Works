@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <link rel="stylesheet" th:href="@{/css/approval/approval-forms.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+    <meta charset="UTF-8">
+    <title>전자결재 양식 리스트</title>
+</head>
+<body>
+<nav th:fragment="mainNav">
+    <div class="approval-forms">
+        <div class="form-container">
+            <h2>전자결재 양식 리스트</h2>
+
+            <div th:each="entry : ${formList}">
+                <div class="form-category">
+                    <h3 th:text="${entry.key}">📌 공통/행정</h3>
+                    <ul class="list">
+                        <li class="list-item" th:each="form : ${entry.value}">
+                            <a th:href="@{/approval/create(formId=${form.formId})}" th:text="${form.formName}">기안서</a>
+                        </li>
+<!--                        <li class="list-item">품의서</li>-->
+<!--                        <li class="list-item">결재요청서</li>-->
+<!--                        <li class="list-item">협조전</li>-->
+<!--                        <li class="list-item">회의록</li>-->
+<!--                        <li class="list-item">업무보고서</li>-->
+<!--                        <li class="list-item">업무일지</li>-->
+<!--                        <li class="list-item">출장신청서</li>-->
+<!--                        <li class="list-item">출장보고서</li>-->
+<!--                        <li class="list-item">휴가신청서</li>-->
+<!--                        <li class="list-item">연차/반차 신청서</li>-->
+<!--                        <li class="list-item">초과근무 신청서</li>-->
+<!--                        <li class="list-item">외근 신청서</li>-->
+<!--                        <li class="list-item">근태 정정 신청서</li>-->
+<!--                        <li class="list-item">경조사 신청서</li>-->
+                    </ul>
+                </div>
+
+<!--                <div class="form-category">-->
+<!--                    <h3>💰 구매/재무</h3>-->
+<!--                    <ul class="list">-->
+<!--                        <li class="list-item">지출결의서</li>-->
+<!--                        <li class="list-item">입금의뢰서</li>-->
+<!--                        <li class="list-item">세금계산서 발행 요청서</li>-->
+<!--                        <li class="list-item">경비청구서</li>-->
+<!--                        <li class="list-item">자산/비품 구매 신청서</li>-->
+<!--                        <li class="list-item">물품 견적 요청서</li>-->
+<!--                        <li class="list-item">계약 검토 요청서</li>-->
+<!--                        <li class="list-item">세금계산서 수령 확인서</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+
+<!--                <div class="form-category">-->
+<!--                    <h3>👥 인사/총무</h3>-->
+<!--                    <ul class="list">-->
+<!--                        <li class="list-item">인사발령 요청서</li>-->
+<!--                        <li class="list-item">사직서 / 퇴직신청서</li>-->
+<!--                        <li class="list-item">채용 승인 요청서</li>-->
+<!--                        <li class="list-item">직무 변경 요청서</li>-->
+<!--                        <li class="list-item">사내교육 신청서</li>-->
+<!--                        <li class="list-item">교육 참석보고서</li>-->
+<!--                        <li class="list-item">상벌 보고서</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+
+<!--                <div class="form-category">-->
+<!--                    <h3>🔐 IT/보안</h3>-->
+<!--                    <ul class="list">-->
+<!--                        <li class="list-item">시스템 계정 신청서</li>-->
+<!--                        <li class="list-item">장비 사용 신청서</li>-->
+<!--                        <li class="list-item">소프트웨어 설치 요청서</li>-->
+<!--                        <li class="list-item">네트워크 사용 요청서</li>-->
+<!--                        <li class="list-item">보안사고 보고서</li>-->
+<!--                        <li class="list-item">개인정보 처리 요청서</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+</nav>
+<script th:inline="javascript">
+    // DOM 요소 접근 OK
+    const isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+
+    document.querySelectorAll('.approval-link').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (isLoggedIn) {
+                window.location.href = this.dataset.href;
+            } else {
+                alert("로그인이 필요합니다.");
+            }
+        });
+    });
+</script>
+</body>
+</html>

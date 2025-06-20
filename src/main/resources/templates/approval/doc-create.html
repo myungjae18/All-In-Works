@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>전자결재 문서</title>
+    <link rel="stylesheet" th:href="@{/css/approval/doc-form.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="/approval/formList" class="back-button"> 목록으로 가기</a>
+</div>
+<br>
+
+<div class="form-container" th:fragment="formBox">
+
+    <form action="/approval/submit" method="post">
+        <div class="header">
+            <h1>전자 결재 문서</h1>
+        </div>
+
+        <div class="section">
+            <table>
+                <tr>
+                    <th>문서 제목</th>
+                    <td colspan="3">
+                        <input type="hidden" name="title" th:value="${docCreate.title}" />
+                        <span th:text="${docCreate.title}">업무 기안서</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>기안자</th>
+                    <td>
+                        <input type="hidden" name="userId" th:value="${session.user.userNo}" />
+                        <span th:text="${docCreate.userName}">홍길동</span>
+                    </td>
+                    <th>부서</th>
+                    <td th:text="${docCreate.userDept}">총무팀</td>
+                </tr>
+                <tr>
+                    <th>직위</th>
+                    <td>과장</td>
+                    <th>작성일자</th>
+                    <td th:text="${docCreate.date}">2025-04-15</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>결재선</h3>
+            <table class="approval-line" id="approval-line">
+                <tr>
+                    <th>결재자</th>
+                    <th>직위</th>
+                    <th>결재 상태</th>
+                    <th>결재일자</th>
+                    <th></th>
+                </tr>
+                <tr data-role="1">
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td><button type="button" onclick="openModal(this)">검색</button> </td>
+                </tr>
+                <tr data-role="2">
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td><button type="button" onclick="openModal(this)">검색</button> </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>본문 내용</h3>
+            <div class="content">
+                <label>
+                    <textarea name="content"></textarea>
+                </label>
+            </div>
+        </div>
+
+<!--        <div class="section">-->
+<!--            <h3>첨부파일</h3>-->
+<!--            <ul>-->
+<!--                <li><a href="#">업무계획서.pdf</a></li>-->
+<!--                <li><a href="#">예산안.xlsx</a></li>-->
+<!--            </ul>-->
+<!--        </div>-->
+        <div class="back-button">
+            <button type="submit">제출</button>
+        </div>
+    </form>
+</div>
+
+<div id="userSearchModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div style="background:white; padding:20px; width:400px; margin:100px auto; border-radius:8px; position:relative;">
+        <h3>사용자 검색</h3>
+        <input type="text" id="searchInput" placeholder="이름을 입력하세요" style="width:100%; padding:8px;" />
+        <button type="button" onclick="searchUsers()" style="margin-top:8px;">검색</button>
+
+        <div id="searchResults" style="margin-top:10px;">
+            <!-- 검색 결과 표시 영역 -->
+        </div>
+        <button onclick="closeModal()" style="position:absolute; top:10px; right:10px;">X</button>
+    </div>
+</div>
+
+<script>
+
+    let currentTargetRow = null;
+
+    function openModal(button) {
+        document.getElementById("userSearchModal").style.display = "block";
+        currentTargetRow = button.closest("tr");
+    }
+
+    function closeModal() {
+        document.getElementById("userSearchModal").style.display = "none";
+    }
+
+
+    function searchUsers() {
+        const keyword = document.getElementById("searchInput").value.trim();
+        if (!keyword) return;
+
+        fetch(`/approval/userSearch?keyword=${encodeURIComponent(keyword)}`)
+            .then(res => res.json())
+            .then(users => {
+                const resultList = document.getElementById("searchResults");
+                resultList.innerHTML = ""; // 기존 검색 결과 초기화
+
+                if (users.length === 0) {
+                    resultList.innerHTML = "<li>결과 없음</li>";
+                    return;
+                }
+
+                users.forEach(user => {
+                    const li = document.createElement("li");
+                    li.textContent = `${user.userName} (${user.department})`;
+                    li.style.cursor = "pointer";
+                    li.classList.add("hover-dark");
+                    li.onclick = () => addApprover(user, currentTargetRow);
+                    resultList.appendChild(li);
+                });
+            });
+    }
+
+    function addApprover(user, row) {
+        if (!row) return;
+
+        const role = row.getAttribute("data-role");
+
+        // role에 따라 name 결정
+        let inputName = "";
+        if (role === "1") {
+            inputName = "approveUserId";
+        } else if (role === "2") {
+            inputName = "confirmUserId";
+        }
+
+        console.log(row)
+
+        const table = document.getElementById("approval-line");
+        const targetRow = table.rows[row];
+
+        // targetRow.innerHTML = `
+        //     <td>${user.userName}</td>
+        //     <td>${user.position}</td>
+        //     <td>대기</td>
+        //     <td>-</td>
+        // `;
+
+        row.innerHTML = `
+        <td>
+            ${user.userName}
+            <input type="hidden" name="${inputName}" value="${user.userNo}" />
+        </td>
+        <td>${user.position}</td>
+        <td>대기</td>
+        <td>-</td>
+        <td><button type="button" onclick="openModal(this)">검색</button></td>
+    `;
+
+        document.getElementById("searchResults").innerHTML = "";
+        document.getElementById("approverSearch").value = "";
+        document.getElementById("searchInput").value = "";
+    }
+
+</script>
+
+</body>
+</html>

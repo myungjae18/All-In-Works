@@ -1,0 +1,21 @@
+.userMouseOn:hover {
+    border-radius: 10px;
+    background-color: rgb(107, 107, 107);
+    transition: background-color 0.5s ease-in-out;
+}
+
+.table-active {
+    background-color: #96a6d1 !important;
+    transition: background-color 0.2s;
+}
+
+.custom-dropdown-item {
+    color: var(--bs-heading-color);
+    border-radius: 15px;
+
+}
+
+.custom-dropdown-item:hover {
+    background-color: #5f6061e0 !important;
+    transition: background-color 0.2s;
+}

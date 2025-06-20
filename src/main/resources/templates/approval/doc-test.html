@@ -1,0 +1,24 @@
+<!-- doc-detail.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>문서 상세</title>
+</head>
+<body>
+
+<!-- 여기에 formBox fragment 정의 -->
+<div th:fragment="formBox">
+    <form>
+        <label for="title">제목:</label>
+        <input type="text" id="title" name="title"><br>
+
+        <label for="content">내용:</label>
+        <textarea id="content" name="content"></textarea><br>
+
+        <button type="submit">제출</button>
+    </form>
+</div>
+
+</body>
+</html>
