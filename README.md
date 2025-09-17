@@ -1,6 +1,8 @@
 ![header](https://capsule-render.vercel.app/api?type=waving&text=All-In-Works&color=auto)
 ## 제작 기간
 2025.03 - 2025.06
+## 프로젝트 개요
+- 프로젝트 관리, 일정 공유, 문서 협업 등 팀 업무 효율 극대화를 위해 올인원 그룹웨어를 구축
 ## 기술 스택
 <img src="https://img.shields.io/badge/spring boot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
 <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=Thymeleaf&logoColor=white"/>
