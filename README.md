@@ -17,24 +17,24 @@ full-calendar api를 활용하여 페이지 디자인
 
 팀 내에서 공유하는 캘린더로, 해당 캘린더 내 변경 사항(일정 추가, 삭제 등)이 있을 경우 브로드캐스팅 기술을 이용하여 페이지 새로고침과 상관없이 일괄 적용
 - 월별 일정
-<img width="825" height="485" alt="Image" src="https://github.com/user-attachments/assets/957e3704-6960-4de9-9cd5-d56eb508d1cb" />
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/957e3704-6960-4de9-9cd5-d56eb508d1cb" />
 
 - 주별 일정
-<img width="735" height="471" alt="Image" src="https://github.com/user-attachments/assets/4ecce846-4460-46c9-b746-ba2c6d208dbe" />
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/4ecce846-4460-46c9-b746-ba2c6d208dbe" />
 
 - 일정 등록/수정
-<img width="803" height="438" alt="Image" src="https://github.com/user-attachments/assets/a5a07427-4002-45ec-9297-bdf6406a45a9" />
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/a5a07427-4002-45ec-9297-bdf6406a45a9" />
 
-<img width="783" height="438" alt="Image" src="https://github.com/user-attachments/assets/56a51026-bf39-445e-ad13-1d51c8b701e9" />
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/56a51026-bf39-445e-ad13-1d51c8b701e9" />
 
 ### 2. 프로젝트 보드
 canvan board 형태로 디자인
 
 - 프로젝트 현황
    팀 내에서 공유하는 칸반 보드로, 해당 보드 내 변경 사항(작업 추가, 삭제, 이동)이 있을 경우 브로드캐스팅 기술을 이용하여 페이지 새로고침과 상관없이 일괄 적용
-<img width="1329" height="624" alt="Image" src="https://github.com/user-attachments/assets/46aa351e-3441-4698-8ded-de29f43736ae" />
+<img  width="100%" alt="Image" src="https://github.com/user-attachments/assets/46aa351e-3441-4698-8ded-de29f43736ae" />
 
 - 프로젝트 등록/수정
-<img width="781" height="425" alt="Image" src="https://github.com/user-attachments/assets/f4d35a72-bb69-41f9-9683-3cf914639ecc" />
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/f4d35a72-bb69-41f9-9683-3cf914639ecc" />
 
-<img width="786" height="426" alt="Image" src="https://github.com/user-attachments/assets/89fb50f8-ebb2-4767-a4bd-3f851b8af0e3" />
+<img  width="100%" alt="Image" src="https://github.com/user-attachments/assets/89fb50f8-ebb2-4767-a4bd-3f851b8af0e3" />
